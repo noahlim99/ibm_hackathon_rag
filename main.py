@@ -28,8 +28,8 @@ wml_credentials = {
 parameters = {
     "decoding_method": DecodingMethods.SAMPLE.value,  # Sampling 방식
     "temperature": 0.3,  # 온도
-    "top_p": 0.5,  # 상위 P (핵심 샘플링)
-    "top_k": 20,  # 상위 K
+    "top_p": 0.3,  # 상위 P (핵심 샘플링)
+    "top_k": 10,  # 상위 K
     "repetition_penalty": 1.5,  # 반복 페널티
     "min_new_tokens": 100,  # 최소 토큰
     "max_new_tokens": 700,  # 최대 토큰
@@ -63,7 +63,7 @@ class QueryRequest(BaseModel):
     category: str  # 선택된 카테고리
 
 
-def trim_knowledge_base(results, max_tokens=1500):
+def trim_knowledge_base(results, max_tokens=800):
     """검색된 문서를 길이 제한에 맞게 다듬는 함수"""
     knowledge_base = ""
     total_tokens = 0
@@ -83,7 +83,7 @@ def generate_prompt(results, user_question):
         knowledge_base = "관련된 참고 자료를 찾을 수 없습니다. 아래 질문에 대해 최대한 명확히 답변해 주세요."
     else:
         # 중복 제거 및 길이 제한 적용
-        knowledge_base = trim_knowledge_base(results, max_tokens=1500)
+        knowledge_base = trim_knowledge_base(results, max_tokens=800)
 
     prompt = f"""
 -당신은 보호종료아동을 돕는 **친절한 AI 비서**입니다.  
