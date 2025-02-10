@@ -52,13 +52,31 @@ class QueryRequest(BaseModel):
 
 # ================================ 시스템 프롬프트 ================================ #
 
+def trim_knowledge_base(results, max_tokens=700):
+    """검색된 문서를 길이 제한에 맞게 다듬는 함수"""
+    knowledge_base = ""
+    total_tokens = 0
+
+    for doc in results:
+        doc_tokens = len(doc.page_content.split())  # 텍스트를 단어 기준으로 토큰화
+        if total_tokens + doc_tokens > max_tokens:
+            # 초과되는 경우, 필요한 만큼만 잘라서 추가
+            remaining_tokens = max_tokens - total_tokens
+            knowledge_base += " ".join(doc.page_content.split()[:remaining_tokens]) + "\n"
+            break
+        knowledge_base += doc.page_content + "\n"
+        total_tokens += doc_tokens
+
+    return knowledge_base.strip()
+
 def generate_prompt(results, user_question):
     """검색된 문서를 포함한 최종 Watsonx.ai 프롬프트 생성"""
 
     if not results:
         knowledge_base = "관련된 참고 자료를 찾을 수 없습니다. 아래 질문에 대해 최대한 명확히 답변해 주세요."
     else:
-        knowledge_base = "\n".join(set(doc.page_content for doc in results))
+        # 700토큰 제한 적용
+        knowledge_base = trim_knowledge_base(results, max_tokens=700)
 
     prompt = f"""
 당신은 보호종료아동을 돕는 **정직하고 친절한 AI 비서**입니다.  
