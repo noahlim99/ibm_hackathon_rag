@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # 📌 FastAPI RAG 시스템 엔드포인트 설정
-RAG_API_URL = "http://localhost:8000/ask/"  # FastAPI 서버 URL
+RAG_API_URL = "http://localhost:8030/ask/"  # FastAPI 서버 URL
 
 # 📌 세션 상태 초기화
 if "page" not in st.session_state:
